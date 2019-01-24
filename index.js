@@ -1,28 +1,35 @@
 /*
- * black 2019/1/24
- * connect组件
- * */
-const connect = require('connect');
-let router = require('./router/router').router;
+ * @Author: dali
+ * @Date: 2019-01-24 18:46:16
+ * @Last Modified by: dali
+ * @Last Modified time: 2019-01-24 18:56:54
+ */
+const connect = require('connect')
+const url = require('url')
 
-let routes = {
-  GET: {
-    '/users': (req, res) => {
-      res.end('tobi,loki,ferret');
-    },
-    '/users/:id': (req, res, id) => {
-      res.end('user' + id);
-    }
-  },
-  DELETE: {
-    '/users/:id': (req, res, id) => {
-      res.end('deleted user' + id)
-    }
-  }
-};
-
-connect()
-  .use(router(routes))
+const app = connect()
+  .use(rewrite)
+  .use(geturl)
   .listen(3000, _ => {
-    console.log('server run 3000!~~')
-  });
+    console.log('server run 3000!~')
+  })
+
+//rewrite,重写url
+function rewrite(req, res, next) {
+  const path = url.parse(req.url).pathname
+  let match = path.match(/^\/blog\/posts\/(.+)/)
+  if (match) {
+    // 此处查找是否真的有这个用户
+    let id = 'nishizhu22'
+    req.url = '/blog/posts/' + id
+    next()
+  } else {
+    next()
+  }
+}
+
+// 一个获取url的函数
+function geturl(req, res, next) {
+  console.log(req.url)
+  next()
+}
